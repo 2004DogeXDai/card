@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>惊喜贺卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            cursor: pointer;
+        }
+
+        /* 贺卡背景 */
+        .card-background {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5f0 50%, #f0f8ff 100%);
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 218, 185, 0.1) 0%, transparent 50%);
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 花灯容器 */
+        .lantern-container {
+            position: absolute;
+            top: 80px;
+            left: 100px;
+            width: 120px;
+            height: 180px;
+            z-index: 10;
+        }
+
+        /* 花灯主体 */
+        .lantern {
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(145deg, #ff6b6b, #ff8787);
+            border-radius: 40px 40px 5px 5px;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            animation: swing 3s ease-in-out infinite;
+            transform-origin: top center;
+        }
+
+        .lantern::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 20px;
+            background: linear-gradient(145deg, #ff8787, #ff6b6b);
+            border-radius: 10px;
+        }
+
+        .lantern::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(145deg, #ff8787, #ff6b6b);
+            border-radius: 20px 20px 5px 5px;
+        }
+
+        /* 花灯装饰线条 */
+        .lantern-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .lantern-line:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(90deg);
+        }
+
+        /* 花灯摇曳动画 */
+        @keyframes swing {
+            0%, 100% {
+                transform: rotate(-8deg);
+            }
+            50% {
+                transform: rotate(8deg);
+            }
+        }
+
+        /* 雪花容器 */
+        .snowflakes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: #fff;
+            font-family: Arial;
+            text-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.9),
+                0 0 20px rgba(200, 220, 255, 0.6);
+            animation: snowfall linear infinite;
+            opacity: 0.9;
+            user-select: none;
+        }
+
+        /* 不同大小的雪花 */
+        .snowflake.small {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .snowflake.medium {
+            font-size: 1.2em;
+            opacity: 0.85;
+        }
+
+        .snowflake.large {
+            font-size: 1.8em;
+            opacity: 0.95;
+            text-shadow: 
+                0 0 15px rgba(255, 255, 255, 1),
+                0 0 30px rgba(200, 220, 255, 0.8);
+        }
+
+        @keyframes snowfall {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(55vh) translateX(calc(var(--drift) * 50px)) rotate(360deg);
+            }
+            95% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) translateX(calc(var(--drift) * 100px)) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* 提示文字 */
+        .hint {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 18px;
+            opacity: 0.7;
+            animation: blink 2s ease-in-out infinite;
+            z-index: 100;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* 花瓣容器 */
+        .petal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .petal {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle at 35% 35%, #ffb3d9, #ff99cc, #ff80bf, #ff66b3);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 
+                0 15px 50px rgba(255, 153, 204, 0.6),
+                inset 0 -10px 30px rgba(255, 102, 179, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0) rotate(0deg);
+            opacity: 0;
+            pointer-events: auto;
+            cursor: pointer;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .petal-text {
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .petal.show {
+            animation: petalPop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes petalPop {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* 图标容器 */
+        .icon-container {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            animation: iconFloat 2s ease-in-out infinite;
+            font-size: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="card-background">
+        <!-- 花灯 -->
+        <div class="lantern-container">
+            <div class="lantern">
+                <div class="lantern-line"></div>
+                <div class="lantern-line"></div>
+            </div>
+        </div>
+
+        <!-- 雪花 -->
+        <div class="snowflakes"></div>
+
+        <!-- 提示文字 -->
+        <div class="hint" style="display: none;">点击任意位置查看更多惊喜 ✨</div>
+
+        <!-- 花瓣容器 -->
+        <div class="petal-container"></div>
+    </div>
+
+    <script>
+        // 创建雪花
+        function createSnowflakes() {
+            const snowflakesContainer = document.querySelector('.snowflakes');
+            const snowflakeSymbols = ['❄', '❅', '❆', '❄️', '✨'];
+            const sizes = ['small', 'medium', 'large'];
+            
+            // 增加雪花数量，创建更丰富的效果
+            for (let i = 0; i < 100; i++) {
+                const snowflake = document.createElement('div');
+                const size = sizes[Math.floor(Math.random() * sizes.length)];
+                
+                snowflake.className = `snowflake ${size}`;
+                snowflake.textContent = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
+                snowflake.style.left = Math.random() * 100 + '%';
+                // 更随机的时间，让雪花更自然
+                snowflake.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                // 随机飘动幅度（左右摇摆）
+                const driftAmount = (Math.random() - 0.5) * 150; // -75px 到 75px
+                snowflake.style.setProperty('--drift', driftAmount / 100);
+                snowflakesContainer.appendChild(snowflake);
+            }
+        }
+
+        // 存储已创建的花瓣位置，避免重叠
+        const petalPositions = [];
+        
+        // 创建花瓣弹窗
+        function createPetalPopup(text, icons) {
+            const petalContainer = document.querySelector('.petal-container');
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            
+            // 计算位置，避免重叠
+            let x, y;
+            let attempts = 0;
+            do {
+                x = Math.random() * (window.innerWidth - 370) + 25;
+                y = Math.random() * (window.innerHeight - 370) + 25;
+                attempts++;
+            } while (attempts < 20 && petalPositions.some(pos => {
+                const dx = pos.x - x;
+                const dy = pos.y - y;
+                return Math.sqrt(dx * dx + dy * dy) < 370;
+            }));
+            
+            petalPositions.push({ x, y });
+            petal.style.left = x + 'px';
+            petal.style.top = y + 'px';
+            
+            // 添加文字
+            const textDiv = document.createElement('div');
+            textDiv.className = 'petal-text';
+            textDiv.textContent = text;
+            petal.appendChild(textDiv);
+            
+            // 图标映射
+            const iconMap = {
+                'bubble-tea': '🥤',
+                'jiexiang-lantern': '🏮',
+                'lion-head': '🍖',
+                'mushroom': '🍄'
+            };
+            
+            // 添加图标
+            icons.forEach((iconType, index) => {
+                const iconContainer = document.createElement('div');
+                iconContainer.className = 'icon-container';
+                
+                // 图标位置（围绕花瓣）
+                const angle = (index * 360 / icons.length) * Math.PI / 180;
+                const radius = 160;
+                iconContainer.style.left = (160 + radius * Math.cos(angle) - 40) + 'px';
+                iconContainer.style.top = (160 + radius * Math.sin(angle) - 40) + 'px';
+                iconContainer.style.animationDelay = (index * 0.2) + 's';
+                
+                // 添加emoji图标
+                iconContainer.textContent = iconMap[iconType] || '❓';
+                petal.appendChild(iconContainer);
+            });
+            
+            petalContainer.appendChild(petal);
+            
+            // 触发动画
+            setTimeout(() => {
+                petal.classList.add('show');
+            }, 10);
+            
+            // 点击关闭
+            petal.addEventListener('click', () => {
+                petal.style.animation = 'petalPop 0.5s reverse';
+                setTimeout(() => {
+                    // 从位置记录中移除
+                    const index = petalPositions.findIndex(pos => pos.x === x && pos.y === y);
+                    if (index > -1) {
+                        petalPositions.splice(index, 1);
+                    }
+                    petal.remove();
+                }, 500);
+            });
+        }
+
+        // 初始化
+        let popupIndex = 0;
+        const popups = [
+            {
+                text: '姐姐，小五想你了',
+                icons: ['bubble-tea', 'jiexiang-lantern', 'lion-head', 'mushroom']
+            }
+        ];
+
+        // 自动弹出弹窗
+        function autoPopPetal() {
+            const popup = popups[0]; // 使用第一个弹窗配置
+            createPetalPopup(popup.text, popup.icons);
+        }
+
+        // 页面加载后自动弹出多个弹窗
+        function startAutoPopups() {
+            // 前10秒，每秒弹出8个弹窗
+            const popupCountPerSecond = 8;
+            const intervalPerPopup = 1000 / popupCountPerSecond; // 约125毫秒
+            const duration = 10; // 持续10秒
+            const totalSeconds = duration;
+            
+            // 每秒执行8次弹窗
+            for (let second = 0; second < totalSeconds; second++) {
+                for (let i = 0; i < popupCountPerSecond; i++) {
+                    setTimeout(() => {
+                        autoPopPetal();
+                    }, 500 + second * 1000 + i * intervalPerPopup);
+                }
+            }
+            
+            // 10秒后，每隔3-5秒随机弹出一个
+            setTimeout(() => {
+                setInterval(() => {
+                    if (Math.random() > 0.3) { // 70%概率弹出
+                        autoPopPetal();
+                    }
+                }, 4000);
+            }, 10500); // 10.5秒后开始
+        }
+
+        // 点击事件（作为补充，点击也可以弹出）
+        document.addEventListener('click', (e) => {
+            // 如果点击的不是已存在的花瓣
+            if (!e.target.closest('.petal')) {
+                autoPopPetal();
+            }
+        });
+
+        // 页面加载时创建雪花和自动弹窗
+        window.addEventListener('load', () => {
+            createSnowflakes();
+            startAutoPopups();
+        });
+    </script>
+</body>
+</html>
